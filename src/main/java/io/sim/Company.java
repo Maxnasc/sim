@@ -1,6 +1,9 @@
 package io.sim;
 
+import java.time.Instant;
 import java.util.ArrayList;
+
+import org.json.JSONObject;
 
 public class Company extends Thread{
     // Deve ser uma thread
@@ -14,26 +17,42 @@ public class Company extends Thread{
     private ArrayList <Route> rotasAseremExecutadas;
     private ArrayList <Route> rotasEmExecucao;
     private ArrayList <Route> rotasExecutadas;
+    
+    private Instant timestamp;
+    private JsonManager jsonMaker = new JsonManager();
+    private Cryptographer encriptador = new Cryptographer();
+    private JSONObject json = new JSONObject();
+    private SharedMemory memoriaCompartilhada = new SharedMemory();
 
     //objeto de comunicação alphabank
-    private AlphaBank conta; 
+    private String idConta;
+    private double valorInicialDaConta; 
 
     public Company() {
         this.precoPkm = 3.25;
-        // conta = new AlphaBank();
-        // conta.criarConta("Company", 100); // conta da empresa
+        this.idConta = "Company";
+        this.valorInicialDaConta = 100.0;
+        // criar conta no banco
+        criarConta();
     }
 
     public void run() {
-        // criar conta no banco 
+        // Processos iniciais...
         while (isAlive()){
             try {
-                System.out.println("Thread Company");
-                Thread.sleep(500);
+                //System.out.println("Thread Company");
+                Thread.sleep(1000);
             } catch (Exception e) {
                 // TODO: handle exception
             }
     }}
+
+    private void criarConta() {
+        timestamp = Instant.now();
+        long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
+        json = jsonMaker.JsonCriarConta(encriptador.criptografarString(idConta), encriptador.criptografarDouble(valorInicialDaConta), encriptador.criptografarTimestamp(timestampNanos));
+        memoriaCompartilhada.write(json, "CriarConta");
+    }
 
     public void addRoute (Route route){
         this.rotasAseremExecutadas.add(route);

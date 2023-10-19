@@ -1,19 +1,60 @@
 package io.sim;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.google.gson.JsonArray;
 
 public class AlphaBank extends Thread {
     
     private ArrayList <Account> contas;
-    private Cryptographer tradutor = new Cryptographer();
+    private Cryptographer tradutor;
+    private Instant ultimaLeitura;
+    private Map<String, String> map = new HashMap<>();
+
+    private JsonManager jsonMaker = new JsonManager();
+    private Cryptographer encriptador = new Cryptographer();
+    private SharedMemory memoriaCompartilhada = new SharedMemory();
+    private Long timestampCriarConta;
+    private Instant tempo;
 
     public AlphaBank (){
         this.contas =  new ArrayList<Account>();
+        this.tradutor = new Cryptographer();
+        this.tempo = Instant.now();
+        timestampCriarConta = (long) 0;
     }
+    
+    public void run() {
+        while (isAlive()){
+            try {
+                System.out.println("Thread Alphabank");
+                lerArquivo();
+                Thread.sleep(500);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            // throw new UnsupportedOperationException("Unimplemented method 'run'"); -> diz q o run n foi implementado
+    }}
 
-    public void criarConta(String id, double saldoInicial) { // adicionar prefixo identificando qual tipo de conta, driver, company ou fuel station
+    public void criarConta(JSONObject arquivo) { // adicionar prefixo identificando qual tipo de conta, driver, company ou fuel station
+        // Pega as informações encriptadas
+        String idString = arquivo.get("idConta").toString();
+        String StringSaldoInicial = arquivo.get("quantia").toString();
+        // Descriptografa as informações
+        int a=1;
+        String id = encriptador.descriptografarString(idString);
+        double saldoInicial = encriptador.descriptografarDouble(StringSaldoInicial);
+        // Cria a conta com os dados obtidos
         Account conta = new Account(id, saldoInicial);
         contas.add(conta);
+        System.out.println("Conta cadastrada = " + conta.getAccount());
+        System.out.println("Saldo da conta = " + conta.getSaldo());
     }
 
     public void transferencia(String idPagador, String idRecebedor, double quantia) {
@@ -50,31 +91,37 @@ public class AlphaBank extends Thread {
         return i;
     }
 
-    private void encripter(){
-        String dado = "Qualquer coisa que vier na mente";
-        String msg;
-
-        msg = tradutor.cripyografar(dado);
-        System.out.println(dado);
-        System.out.println(msg);
+    private void lerArquivo() {
+        JSONArray jsonS = memoriaCompartilhada.read();
+        for (int i = 0; i < jsonS.length(); i++) {
+            JSONObject arquivo = jsonS.getJSONObject(i);
+            separadorDeJsons(arquivo);
+        }
     }
 
-    public void run() {
-        // TODO Auto-generated method stub
-        while (isAlive()){
-            try {
-                System.out.println("Thread Alphabank");
-                String dado = "Qualquer coisa que vier na mente";
-                String msg;
+    private void separadorDeJsons(JSONObject arquivo) {
+        switch(arquivo.get("tipo_de_requisicao").toString()){
+            //Case de criar conta
+            case "CriarConta":
+                Long tempoAux = verificaTempo(arquivo, timestampCriarConta);
+                if (tempoAux > timestampCriarConta) {
+                    timestampCriarConta = tempoAux;
+                    criarConta(arquivo);
+                }
+                break;
+        }
+    
+    }
 
-                msg = tradutor.cripyografar(dado);
-                System.out.println(dado);
-                System.out.println(msg);
-                encripter();
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                // TODO: handle exception
-            }
-            // throw new UnsupportedOperationException("Unimplemented method 'run'"); -> diz q o run n foi implementado
-    }}
+    private Long verificaTempo (JSONObject arquivo, Long timestamp) {
+        String timestampAtualStr = arquivo.get("timestamp").toString();
+        Long timestampAtual = encriptador.descriptografarTimestamp(timestampAtualStr);
+        if (timestampAtual > timestamp){
+            timestamp = timestampAtual;
+            System.out.println("CRIA CONTA");
+        } else{
+            System.out.println("NAO CRIA CONTA");
+        }
+        return timestamp;
+    }
 }

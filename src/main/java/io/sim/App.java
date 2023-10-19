@@ -9,8 +9,13 @@ public class App {
 
         //EnvSimulator ev = new EnvSimulator();
         //ev.start();
+        // Construtores
         AlphaBank alpha = new AlphaBank();
+        Company companhia = new Company();
+
+        // Iniciando threads
         alpha.start();
+        companhia.start();
         //B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\io\sim\App.java
     }
 }

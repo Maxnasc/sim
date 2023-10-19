@@ -3,9 +3,12 @@ package io.sim;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Semaphore;
+import java.util.stream.Stream;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class SharedMemory {
@@ -29,22 +32,31 @@ public class SharedMemory {
         }
     }
 
-    public JSONObject read(String requisicao) {
-        JSONObject value = null;
-        try {
-            semaphore.acquire();
-            // value = this.data;
-            value = getFile(requisicao);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            semaphore.release();
+    public JSONArray read() {
+        JSONArray jsonArray = new JSONArray();
+        String filePath = "src\\main\\java\\io\\sim\\jsons\\";
+
+        try (Stream<Path> paths = Files.walk(Paths.get(filePath))) {
+            paths.filter(Files::isRegularFile)
+                    .filter(p -> p.toString().endsWith(".json"))
+                    .forEach(file -> {
+                        try {
+                            String content = new String(Files.readAllBytes(file));
+                            JSONObject json = new JSONObject(content);
+                            jsonArray.put(json);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return value;
+
+        return jsonArray;
     }
 
     private void saveFile(JSONObject value, String nomeArquivo) {
-        try (FileWriter file = new FileWriter("/jsons/" + nomeArquivo + ".json")) {
+        try (FileWriter file = new FileWriter("src\\main\\java\\io\\sim\\jsons\\" + nomeArquivo + ".json")) {
             file.write(value.toString());
             // System.out.println("Successfully Copied JSON Object to File...");
             // System.out.println("\nJSON Object: " + value);
