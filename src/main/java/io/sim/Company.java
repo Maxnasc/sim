@@ -20,11 +20,12 @@ public class Company extends Thread{
 
     public Company() {
         this.precoPkm = 3.25;
-        conta = new AlphaBank();
-        conta.criarConta("Company", 100); // conta da empresa
+        // conta = new AlphaBank();
+        // conta.criarConta("Company", 100); // conta da empresa
     }
 
     public void run() {
+        // criar conta no banco 
         while (isAlive()){
             try {
                 System.out.println("Thread Company");

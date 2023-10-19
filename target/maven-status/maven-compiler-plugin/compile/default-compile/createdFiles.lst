@@ -16,6 +16,7 @@ sim\traci4j\test\java\it\polito\appeal\traci\test\NanoHTTPD.class
 sim\traci4j\src\java\it\polito\appeal\traci\ControlledLink.class
 sim\traci4j\src\java\it\polito\appeal\traci\ReadShapeQuery.class
 sim\traci4j\test\java\it\polito\appeal\traci\test\SumoGuiTest.class
+io\sim\SharedMemory.class
 sim\traci4j\src\java\it\polito\appeal\traci\Vehicle$7.class
 sim\traci4j\src\java\it\polito\appeal\traci\ReadObjectVarQuery$DoubleQ.class
 sim\traci4j\src\java\it\polito\appeal\traci\VehicleType$Variable.class
@@ -45,7 +46,6 @@ io\sim\Company.class
 sim\traci4j\src\java\it\polito\appeal\traci\TraCIException$UnexpectedData.class
 sim\traci4j\src\java\it\polito\appeal\traci\Vehicle$6.class
 sim\traci4j\src\java\it\polito\appeal\traci\StepAdvanceListener.class
-io\sim\Conta.class
 sim\traci4j\src\java\de\uniluebeck\itm\tcpip\Storage.class
 sim\traci4j\src\java\it\polito\appeal\traci\AddVehicleQuery$IllegalLaneException.class
 sim\traci4j\src\java\it\polito\appeal\traci\ChangeObjectVarQuery$ChangeDoubleQ.class
@@ -85,7 +85,6 @@ sim\traci4j\src\java\it\polito\appeal\traci\ReadLinksQuery.class
 sim\traci4j\src\java\it\polito\appeal\traci\Repository$VehicleTypes$1.class
 sim\traci4j\src\java\it\polito\appeal\traci\ChangeObjectVarQuery.class
 sim\traci4j\src\java\it\polito\appeal\traci\Logic.class
-io\sim\Transferencias.class
 sim\traci4j\src\java\it\polito\appeal\traci\ObjectCollectionQuery.class
 sim\traci4j\src\java\it\polito\appeal\traci\VehicleType.class
 sim\traci4j\test\java\it\polito\appeal\traci\test\protocol\MessageTest.class

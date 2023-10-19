@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class AlphaBank extends Thread {
     
     private ArrayList <Account> contas;
+    private Cryptographer tradutor = new Cryptographer();
 
     public AlphaBank (){
         this.contas =  new ArrayList<Account>();
@@ -49,12 +50,28 @@ public class AlphaBank extends Thread {
         return i;
     }
 
+    private void encripter(){
+        String dado = "Qualquer coisa que vier na mente";
+        String msg;
+
+        msg = tradutor.cripyografar(dado);
+        System.out.println(dado);
+        System.out.println(msg);
+    }
+
     public void run() {
         // TODO Auto-generated method stub
         while (isAlive()){
             try {
                 System.out.println("Thread Alphabank");
-                Thread.sleep(500);
+                String dado = "Qualquer coisa que vier na mente";
+                String msg;
+
+                msg = tradutor.cripyografar(dado);
+                System.out.println(dado);
+                System.out.println(msg);
+                encripter();
+                Thread.sleep(1000);
             } catch (Exception e) {
                 // TODO: handle exception
             }
