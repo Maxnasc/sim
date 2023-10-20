@@ -14,8 +14,8 @@ public class App {
         Company companhia = new Company();
 
         // Iniciando threads
-        alpha.start();
-        companhia.start();
+        alpha.run();
+        companhia.run();
         //B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\io\sim\App.java
     }
 }

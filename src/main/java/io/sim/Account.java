@@ -1,12 +1,20 @@
 package io.sim;
 
+import java.time.Instant;
+import java.util.ArrayList;
+
 public class Account {
     private String idAccount = new String();
     private double saldo;
+    private ArrayList <String> registroAtividades = new ArrayList<String>();
+    private Instant timestamp;
 
     public Account (String conta, double saldoInicial){
         this.idAccount = conta;
         this.saldo = saldoInicial;
+        timestamp = Instant.now();
+        long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
+       registrarOperação(timestampNanos + "# Conta " + conta + " criada, saldo inicial de " + saldoInicial);
     }
 
     public String getAccount() {
@@ -27,5 +35,9 @@ public class Account {
         }else{
             this.saldo-=valor;            
         } 
-    }   
+    }
+    
+    private void registrarOperação(String registro){
+        this.registroAtividades.add(registro);
+    }
 }

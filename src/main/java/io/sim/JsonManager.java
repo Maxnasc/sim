@@ -12,10 +12,11 @@ public class JsonManager {
 
     public JsonManager (){} // Construtor padrão
 
-    public JSONObject JsonTransferencia (String idPagador, String idRecebedor, String quantia) {
+    public JSONObject JsonTransferencia (String idPagador, String idRecebedor, String quantia, String timestamp) {
         obj.put("idPagador", idPagador);
         obj.put("idRecebedor", idRecebedor);
         obj.put("quantia", quantia);
+        obj.put("timestamp", timestamp);
         // adcionar timestamp
         return obj;
     }

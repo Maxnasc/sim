@@ -10,8 +10,10 @@ import org.json.JSONObject;
 
 import com.google.gson.JsonArray;
 
-public class AlphaBank extends Thread {
+public class AlphaBank implements Runnable {
     
+    private boolean isAlive = false;
+
     private ArrayList <Account> contas;
     private Cryptographer tradutor;
     private Instant ultimaLeitura;
@@ -24,14 +26,17 @@ public class AlphaBank extends Thread {
     private Instant tempo;
 
     public AlphaBank (){
+        this.isAlive = true;
         this.contas =  new ArrayList<Account>();
         this.tradutor = new Cryptographer();
         this.tempo = Instant.now();
         timestampCriarConta = (long) 0;
+        
+        run();
     }
     
     public void run() {
-        while (isAlive()){
+        while (isAlive){
             try {
                 System.out.println("Thread Alphabank");
                 lerArquivo();
@@ -72,7 +77,7 @@ public class AlphaBank extends Thread {
         contas.get(index).saque(valor);
     }
 
-    public double getSaldo(String id, double valor) { 
+    public double getSaldo(String id) { 
         int index = findAccountById(id);
         return contas.get(index).getSaldo();
     }

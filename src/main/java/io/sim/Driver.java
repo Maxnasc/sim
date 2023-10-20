@@ -3,55 +3,74 @@ package io.sim;
 import java.time.Instant;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Company implements Runnable {
-    // Deve ser uma thread
-    // deve conter um conjunto de rotas -> FEITO
-    // Deve ser um servidor para carros
-    // Deve ser um cliente de alphaBank -> deve ter uma conta no alphaBank
-    // Criar uma Classe BotPayment (Thread)
-    // gerar xlsl de relatório (xlsl é sugestão minha)
-
+public class Driver implements Runnable {
+    
     private boolean isAlive = false;
 
-    private double precoPkm;
     private ArrayList <Route> rotasAseremExecutadas;
     private ArrayList <Route> rotasEmExecucao;
     private ArrayList <Route> rotasExecutadas;
-    
-    private Instant timestamp;
+
     private JsonManager jsonMaker = new JsonManager();
     private Cryptographer encriptador = new Cryptographer();
-    private JSONObject json = new JSONObject();
     private SharedMemory memoriaCompartilhada = new SharedMemory();
+    private JSONObject json = new JSONObject();
+    private Instant timestamp;
+    private Long timestampDriver;
+    private AlphaBank banco = new AlphaBank();
+
+    private Car carro = new Car();
+    private final int cadastroDriver; 
 
     //Dados da conta alphabank
     private String idConta;
-    private double valorInicialDaConta; 
+    private double valorInicialDaConta;
+    private double saldo; 
 
-    public Company() {
+    public Driver(int cadastroDriver) {
         this.isAlive = true;
-        this.precoPkm = 3.25;
-        this.idConta = "Company";
-        this.valorInicialDaConta = 100.0;
-        // criar conta no banco
+        this.idConta = ("Driver_" + cadastroDriver);
+        this.valorInicialDaConta = 0;
+        this.saldo = 0;
+        this.cadastroDriver = cadastroDriver;
         criarConta();
 
-        BotPayment botDePagamentos = new BotPayment(idConta);
         run();
     }
 
     public void run() {
-        // Processos iniciais...
+        rotasAseremExecutadas = getRoutes();
         while (isAlive){
             try {
-                //System.out.println("Thread Company");
-                Thread.sleep(1000);
+                System.out.println("Driver");
+                // funções a serem processadas
+                Thread.sleep(500);
             } catch (Exception e) {
-                // TODO: handle exception
+                System.out.println(e);
             }
+            // throw new UnsupportedOperationException("Unimplemented method 'run'"); -> diz q o run n foi implementado
     }}
+
+    
+
+    private void abastecer() {
+        // Parar o carro
+        this.saldo = getSaldo();
+        if (saldo > 5.87){
+            carro.abastecer();
+        }else{
+            System.out.println("Carro_" + cadastroDriver + ": Sem saldo suficiente");
+        }
+        // Liberar o carro
+    }
+
+    private ArrayList<Route> getRoutes() {
+        // Faz um json solicitando as rotas, espera elas chegarem e dps retorna
+        return null;
+    }
 
     private void criarConta() {
         timestamp = Instant.now();
@@ -60,16 +79,9 @@ public class Company implements Runnable {
         memoriaCompartilhada.write(json, "CriarConta");
     }
 
-    public void addRoute (Route route){
-        this.rotasAseremExecutadas.add(route);
-    }
-
-    public ArrayList<Route> getCurrentRoute () {
-        return rotasEmExecucao;
-    }
-
-    public ArrayList<Route> getExecutedRoutes () {
-        return rotasExecutadas;
+    private double getSaldo(){
+        double saldoNovo = banco.getSaldo(idConta);
+        return saldoNovo;
     }
 
     class BotPayment {
@@ -80,6 +92,8 @@ public class Company implements Runnable {
         private Cryptographer encriptador = new Cryptographer();
         private JSONObject json = new JSONObject();
         private SharedMemory memoriaCompartilhada = new SharedMemory();
+        private float kmEmMemoria;
+        //public static float kmAtual = 0;;
 
         private String idConta;
 
@@ -95,20 +109,17 @@ public class Company implements Runnable {
                 try {
                     //System.out.println("Thread botpayment");
                     // adicionar verificação de km percorrido 
-                    //pay(idDriver);
+                    pay();
                     Thread.sleep(1000);
                 } catch (Exception e) {
                     // TODO: handle exception
                 }
         }}
 
-        public void pay(String idDriver) {
+        public void pay() {
             timestamp = Instant.now();
             long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
             json = jsonMaker.JsonTransferencia(encriptador.criptografarString(idConta), encriptador.criptografarString("Fuel Station"), encriptador.criptografarDouble(5.87), encriptador.criptografarTimestamp(timestampNanos));
             memoriaCompartilhada.write(json, "6");
         }
-    }
-
-        
-}
+}}
