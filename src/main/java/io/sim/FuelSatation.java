@@ -1,6 +1,8 @@
 package io.sim;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONObject;
 
@@ -13,6 +15,7 @@ public class FuelSatation {
     private JSONObject json = new JSONObject();
     private Instant timestamp;
     private Long timestampDriver;
+    private double precoCombustivel;
 
     private Car carro = new Car();
 
@@ -24,6 +27,7 @@ public class FuelSatation {
         this.isAlive = true;
         this.idConta = ("Fuel_Station");
         this.valorInicialDaConta = 0;
+        this.precoCombustivel = 5.87;
         criarConta();
 
         run();
@@ -48,7 +52,20 @@ public class FuelSatation {
         memoriaCompartilhada.write(json, "CriarConta");
     }
 
-    public void abastecer() {
+    public double abastecer(double saldo, double FuelTank, Car carro) {
+        double preco = 0, limiteGasolina = 10, novoFuel = 0;
+        carro.paraCarro();
+        if ((saldo/precoCombustivel) >= limiteGasolina) { // encher o tanque
+            novoFuel = 10;
+            preco = precoCombustivel * 10;
+        } else {
+            novoFuel = saldo/precoCombustivel;
+            preco = saldo;
+        }
+        carro.infoTanqueAbastecido(novoFuel);
+        carro.liberaCarro();
+        // Verifica a quantidade de gasolina, e o saldo e abastece o valor necessário
+        return preco;
     }
 
 }

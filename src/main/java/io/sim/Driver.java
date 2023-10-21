@@ -22,8 +22,12 @@ public class Driver implements Runnable {
     private Long timestampDriver;
     private AlphaBank banco = new AlphaBank();
 
+    private BotPayment bot;
+
     private Car carro = new Car();
     private final int cadastroDriver; 
+    private float kmRodado;
+    private FuelSatation posto;
 
     //Dados da conta alphabank
     private String idConta;
@@ -35,7 +39,11 @@ public class Driver implements Runnable {
         this.idConta = ("Driver_" + cadastroDriver);
         this.valorInicialDaConta = 0;
         this.saldo = 0;
+        this.kmRodado = 0;
         this.cadastroDriver = cadastroDriver;
+
+        bot = new BotPayment(idConta);
+        posto = new FuelSatation();
         criarConta();
 
         run();
@@ -47,6 +55,10 @@ public class Driver implements Runnable {
             try {
                 System.out.println("Driver");
                 // funções a serem processadas
+                if (carro.getAbastecer()){
+                    abastecer();
+                }
+                verificaCorrida();
                 Thread.sleep(500);
             } catch (Exception e) {
                 System.out.println(e);
@@ -56,14 +68,24 @@ public class Driver implements Runnable {
 
     
 
+    private void verificaCorrida() {
+
+    }
+
     private void abastecer() {
         // Parar o carro
+        double preco = 0;
         this.saldo = getSaldo();
         if (saldo > 5.87){
-            carro.abastecer();
+            preco = posto.abastecer(saldo, carro.getFuelTank(), carro);
+            if (preco > 0) { // Abasteceu e temos valor
+                bot.setPagarPosto(true, preco);
+                preco = 0;
+            }
         }else{
-            System.out.println("Carro_" + cadastroDriver + ": Sem saldo suficiente");
+            System.out.println("Carro_" + cadastroDriver + ": Sem saldo suficiente, ainda e necessario abastecer");
         }
+
         // Liberar o carro
     }
 
@@ -92,14 +114,18 @@ public class Driver implements Runnable {
         private Cryptographer encriptador = new Cryptographer();
         private JSONObject json = new JSONObject();
         private SharedMemory memoriaCompartilhada = new SharedMemory();
-        private float kmEmMemoria;
+        private float kmPago;
+        private float kmRodado;
+        private boolean pagarPosto;
         //public static float kmAtual = 0;;
 
         private String idConta;
+        private double valorAPagar;
 
         public BotPayment(String idConta) {
             this.isAlive = true;
             this.idConta = idConta;
+            this.pagarPosto = false;
             run();
         }
         
@@ -109,17 +135,28 @@ public class Driver implements Runnable {
                 try {
                     //System.out.println("Thread botpayment");
                     // adicionar verificação de km percorrido 
-                    pay();
+                    if (pagarPosto){
+                        pay();
+                        kmPago = kmRodado;
+                    }
+                    
                     Thread.sleep(1000);
                 } catch (Exception e) {
                     // TODO: handle exception
                 }
         }}
 
+        public void setPagarPosto(boolean pagarPosto, double quantia) {
+            this.pagarPosto = pagarPosto;
+            this.valorAPagar = quantia;
+        }
+
         public void pay() {
             timestamp = Instant.now();
             long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
-            json = jsonMaker.JsonTransferencia(encriptador.criptografarString(idConta), encriptador.criptografarString("Fuel Station"), encriptador.criptografarDouble(5.87), encriptador.criptografarTimestamp(timestampNanos));
+            json = jsonMaker.JsonTransferencia(encriptador.criptografarString(idConta), encriptador.criptografarString("Fuel_Station"), encriptador.criptografarDouble(valorAPagar), encriptador.criptografarTimestamp(timestampNanos));
             memoriaCompartilhada.write(json, "6");
+            pagarPosto = false;
+            valorAPagar = 0;
         }
 }}
