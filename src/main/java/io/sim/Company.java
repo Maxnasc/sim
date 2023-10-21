@@ -2,6 +2,8 @@ package io.sim;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONObject;
 
@@ -25,6 +27,7 @@ public class Company implements Runnable {
     private Cryptographer encriptador = new Cryptographer();
     private JSONObject json = new JSONObject();
     private SharedMemory memoriaCompartilhada = new SharedMemory();
+    private BotPayment botDePagamentos;
 
     //Dados da conta alphabank
     private String idConta;
@@ -38,7 +41,7 @@ public class Company implements Runnable {
         // criar conta no banco
         criarConta();
 
-        BotPayment botDePagamentos = new BotPayment(idConta);
+        botDePagamentos = new BotPayment();
         run();
     }
 
@@ -80,14 +83,23 @@ public class Company implements Runnable {
         private Cryptographer encriptador = new Cryptographer();
         private JSONObject json = new JSONObject();
         private SharedMemory memoriaCompartilhada = new SharedMemory();
+        private float kmPago;
+        private float kmRodado;
+        private boolean pagarPosto;
+        private Map<String, Double> pagamentosPendentes = new HashMap<String, Double>();
+        //public static float kmAtual = 0;;
 
         private String idConta;
+        private double valorAPagar;
 
-        public BotPayment(String idConta) {
+        public BotPayment() {
             this.isAlive = true;
-            this.idConta = idConta;
+            this.idConta = "Company";
+            this.pagarPosto = false;
             run();
         }
+
+        // Fazer fila de pagamentos para os drivers
         
         public void run() {
             // Processos iniciais...
@@ -95,20 +107,30 @@ public class Company implements Runnable {
                 try {
                     //System.out.println("Thread botpayment");
                     // adicionar verificação de km percorrido 
-                    //pay(idDriver);
+                    if (pagamentosPendentes.size() > 0){
+                        pay();
+                        kmPago = kmRodado;
+                    }
                     Thread.sleep(1000);
                 } catch (Exception e) {
                     // TODO: handle exception
                 }
         }}
 
-        public void pay(String idDriver) {
+        public void setPagarPosto(boolean pagarPosto, double quantia) {
+            this.pagarPosto = pagarPosto;
+            this.valorAPagar = quantia;
+        }
+
+        public void pay() {
             timestamp = Instant.now();
             long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
-            json = jsonMaker.JsonTransferencia(encriptador.criptografarString(idConta), encriptador.criptografarString("Fuel Station"), encriptador.criptografarDouble(5.87), encriptador.criptografarTimestamp(timestampNanos));
+            json = jsonMaker.JsonTransferencia(encriptador.criptografarString(idConta), encriptador.criptografarString("idCarro"), encriptador.criptografarDouble(valorAPagar), encriptador.criptografarTimestamp(timestampNanos));
             memoriaCompartilhada.write(json, "6");
+            pagarPosto = false;
+            valorAPagar = 0;
         }
-    }
+        }
 
         
 }

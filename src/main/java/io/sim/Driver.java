@@ -3,7 +3,6 @@ package io.sim;
 import java.time.Instant;
 import java.util.ArrayList;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Driver implements Runnable {
@@ -159,4 +158,5 @@ public class Driver implements Runnable {
             pagarPosto = false;
             valorAPagar = 0;
         }
-}}
+        }
+}
