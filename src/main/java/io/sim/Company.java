@@ -1,11 +1,20 @@
 package io.sim;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.json.JSONObject;
+import org.python.antlr.ast.Str;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 public class Company implements Runnable {
     // Deve ser uma thread
@@ -29,21 +38,93 @@ public class Company implements Runnable {
     private SharedMemory memoriaCompartilhada = new SharedMemory();
     private BotPayment botDePagamentos;
 
+    private final String caminhoPastaRotas = "map/map.rou.xml";
+
     //Dados da conta alphabank
     private String idConta;
-    private double valorInicialDaConta; 
+    private double valorInicialDaConta;
+
+    private ArrayList<Driver> motoristas = new ArrayList<Driver>();
+    private int nRotasPorPiloto = 0;
+
+    // private String idItinerario; 
 
     public Company() {
         this.isAlive = true;
         this.precoPkm = 3.25;
         this.idConta = "Company";
         this.valorInicialDaConta = 100.0;
+        
+        getRoutes(); // Pega as rotas
+        limparArquivoDeRotas();
+        nRotasPorPiloto = createDriver();
+        distribuirRotas();
         // criar conta no banco
         criarConta();
 
         botDePagamentos = new BotPayment();
         run();
     }
+
+    private void distribuirRotas() {
+        int acumulador = 0, indexDriver =0;
+         ArrayList<Route> edges = new ArrayList<Route>();
+        for (int i=0; i < rotasAseremExecutadas.size(); i++) {
+            if (acumulador < nRotasPorPiloto) {
+               edges.add(rotasAseremExecutadas.get(i));
+            } else if (acumulador == (nRotasPorPiloto-1)) {
+                // Atribui
+                timestamp = Instant.now();
+                long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
+                json = jsonMaker.JsonCriarConta(encriptador.criptografarString(idConta), encriptador.criptografarDouble(valorInicialDaConta), encriptador.criptografarTimestamp(timestampNanos));
+                memoriaCompartilhada.write(json, "CriarConta");
+                Driver motoristaAtual = motoristas.get(indexDriver);
+                motoristaAtual.setRoute();
+            } else {
+                edges.clear();
+                acumulador = 0;
+            }
+            
+        }
+    }
+
+    private void limparArquivoDeRotas() {
+    }
+
+    private int createDriver() {
+        // Verifica o número de rotas
+        for (int i=0; i<100; i++) {
+            motoristas.add(i, new Driver(i));
+        }
+        int numeroDeRotas = rotasAseremExecutadas.size();
+        int novoNumeroDeRotas = numeroDeRotas - numeroDeRotas%100;
+        List<Route> subLista = rotasAseremExecutadas.subList(0, novoNumeroDeRotas);
+            this.rotasAseremExecutadas.clear(); // Limpa a lista original
+            this.rotasAseremExecutadas.addAll(subLista); // Copia a sublista para a lista original
+        return rotasAseremExecutadas.size()/100;
+    }
+
+    private void getRoutes() {
+            try{
+                DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder construtor = builderFactory.newDocumentBuilder();
+                Document doc = construtor.parse(caminhoPastaRotas);
+                NodeList lista = doc.getElementsByTagName("vehicle");
+                for (int i=0; i<lista.getLength(); i++){
+                    Node no = lista.item(i);
+                    if (no.getNodeType() == Node.ELEMENT_NODE) {
+                        Element elemento = (Element) no;
+                        //String idRota = this.idItinerario;
+                        Node node = elemento.getElementsByTagName("route").item(0);
+                        Element edges = (Element) node;
+                        //this.itinerario = new String[] {idRota, edges.getAttribute("edges")};
+                        this.rotasAseremExecutadas.add(new Route("rota" + i, edges.getAttribute("edges")));
+                    }
+                }
+            }catch (ParserConfigurationException | SAXException | IOException e) {
+                e.printStackTrace(); // ou tratamento adequado
+            }
+        }
 
     public void run() {
         // Processos iniciais...
@@ -96,11 +177,12 @@ public class Company implements Runnable {
             this.isAlive = true;
             this.idConta = "Company";
             this.pagarPosto = false;
+            getRoutes();
             run();
         }
 
         // Fazer fila de pagamentos para os drivers
-        
+
         public void run() {
             // Processos iniciais...
             while (isAlive){

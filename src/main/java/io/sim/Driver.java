@@ -23,7 +23,7 @@ public class Driver implements Runnable {
 
     private BotPayment bot;
 
-    private Car carro = new Car();
+    private Car carro;
     private final int cadastroDriver; 
     private float kmRodado;
     private FuelSatation posto;
@@ -43,6 +43,7 @@ public class Driver implements Runnable {
 
         bot = new BotPayment(idConta);
         posto = new FuelSatation();
+        carro = new Car();
         criarConta();
 
         run();
@@ -50,6 +51,7 @@ public class Driver implements Runnable {
 
     public void run() {
         rotasAseremExecutadas = getRoutes();
+        while (rotasAseremExecutadas.size() == 0) {}
         while (isAlive){
             try {
                 System.out.println("Driver");
@@ -64,8 +66,6 @@ public class Driver implements Runnable {
             }
             // throw new UnsupportedOperationException("Unimplemented method 'run'"); -> diz q o run n foi implementado
     }}
-
-    
 
     private void verificaCorrida() {
 
