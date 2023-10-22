@@ -74,12 +74,8 @@ public class Company implements Runnable {
                edges.add(rotasAseremExecutadas.get(i));
             } else if (acumulador == (nRotasPorPiloto-1)) {
                 // Atribui
-                timestamp = Instant.now();
-                long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
-                json = jsonMaker.JsonCriarConta(encriptador.criptografarString(idConta), encriptador.criptografarDouble(valorInicialDaConta), encriptador.criptografarTimestamp(timestampNanos));
-                memoriaCompartilhada.write(json, "CriarConta");
                 Driver motoristaAtual = motoristas.get(indexDriver);
-                motoristaAtual.setRoute();
+                motoristaAtual.setRoute(edges);
             } else {
                 edges.clear();
                 acumulador = 0;
@@ -94,7 +90,7 @@ public class Company implements Runnable {
     private int createDriver() {
         // Verifica o número de rotas
         for (int i=0; i<100; i++) {
-            motoristas.add(i, new Driver(i));
+            motoristas.add(i, new Driver("Driver_" + i));
         }
         int numeroDeRotas = rotasAseremExecutadas.size();
         int novoNumeroDeRotas = numeroDeRotas - numeroDeRotas%100;
