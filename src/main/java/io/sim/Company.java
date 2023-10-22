@@ -80,7 +80,6 @@ public class Company implements Runnable {
                 edges.clear();
                 acumulador = 0;
             }
-            
         }
     }
 
