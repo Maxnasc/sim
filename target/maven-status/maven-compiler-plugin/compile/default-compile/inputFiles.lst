@@ -9,6 +9,7 @@ B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\jav
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\ChangeObjectStateQuery.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\examples\it\polito\appeal\traci\examples\OpenStepsClose.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\test\java\it\polito\appeal\traci\test\TraCIServerTest.java
+B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\io\sim\Driver.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\ControlledLinks.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\ChangeSpeedQuery.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\VehicleLifecycleObserver.java
@@ -34,10 +35,12 @@ B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\jav
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\protocol\ResponseMessage.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\MeMeDetector.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\io\sim\AlphaBank.java
+B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\io\sim\FuelSatation.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\Edge.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\RemoveVehicleQuery.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\ChangeLightsStateQuery.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\ControlledLink.java
+B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\io\sim\Car.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\src\java\it\polito\appeal\traci\ChangeDecelQuery.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\sim\traci4j\test\java\it\polito\appeal\traci\test\TrafficLightsTest.java
 B:\UFLA\Matérias\Matérias_2023_02_FINAL\Automação Avançada\sim\src\main\java\io\sim\App.java

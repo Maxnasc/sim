@@ -72,7 +72,8 @@ public class SharedMemory {
             String content = new String(Files.readAllBytes(Paths.get(path)));
             json = new JSONObject(content);
             return json;
-            //System.out.println(json.toString(4)); // Imprime o JSON formatado com 4 espaços de indentação
+            // System.out.println(json.toString(4)); // Imprime o JSON formatado com 4
+            // espaços de indentação
         } catch (Exception e) {
             e.printStackTrace();
         }

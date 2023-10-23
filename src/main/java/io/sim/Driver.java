@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import org.json.JSONObject;
 
 public class Driver implements Runnable {
-    
+
     private boolean isAlive = false;
 
-    private ArrayList <Route> rotasAseremExecutadas;
-    private ArrayList <Route> rotasEmExecucao;
-    private ArrayList <Route> rotasExecutadas;
+    private ArrayList<Route> rotasAseremExecutadas;
+    private ArrayList<Route> rotasEmExecucao;
+    private ArrayList<Route> rotasExecutadas;
+    private boolean rotasSendoExecutada;
+    private int indexRotas;
 
     private JsonManager jsonMaker = new JsonManager();
     private Cryptographer encriptador = new Cryptographer();
@@ -23,26 +25,34 @@ public class Driver implements Runnable {
 
     private BotPayment bot;
 
+    private String idDriver;
     private Car carro;
-    private String cadastroDriver; 
+    private String cadastroDriver;
     private float kmRodado;
     private FuelSatation posto;
 
-    //Dados da conta alphabank
+    // Dados da conta alphabank
     private String idConta;
     private double valorInicialDaConta;
-    private double saldo; 
+    private double saldo;
 
-    public Driver(String cadastroDriver) {
+    private EnvSimulator simulador;
+
+    public Driver(String cadastroDriver, EnvSimulator simulador) {
         this.isAlive = true;
         this.idConta = cadastroDriver;
+        this.idDriver = cadastroDriver;
         this.valorInicialDaConta = 0;
         this.saldo = 0;
         this.kmRodado = 0;
+        this.rotasSendoExecutada = false; // Inicia sem fazer nenhuma rota
+        this.simulador = simulador; // Objeto que referencia o objeto se simulação do sumo
+        this.indexRotas = 0;
 
         bot = new BotPayment(idConta);
         posto = new FuelSatation();
-        carro = new Car();
+        carro = new Car(this.cadastroDriver, simulador.getSumoObj());
+
         criarConta();
         solicitarRotas();
 
@@ -52,18 +62,19 @@ public class Driver implements Runnable {
     private void solicitarRotas() {
         timestamp = Instant.now();
         long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
-        json = jsonMaker.JsonSolicitaRota(encriptador.criptografarString(idConta), encriptador.criptografarTimestamp(timestampNanos));
+        json = jsonMaker.JsonSolicitaRota(encriptador.criptografarString(idConta),
+                encriptador.criptografarTimestamp(timestampNanos));
         memoriaCompartilhada.write(json, "2");
     }
 
     public void run() {
-        rotasAseremExecutadas = getRoutes();
-        while (rotasAseremExecutadas.size() == 0) {}
-        while (isAlive){
+        while (rotasAseremExecutadas.size() == 0) {
+        }
+        while (isAlive) {
             try {
                 System.out.println("Driver");
                 // funções a serem processadas
-                if (carro.getAbastecer()){
+                if (carro.getAbastecer()) {
                     abastecer();
                 }
                 verificaCorrida();
@@ -71,8 +82,10 @@ public class Driver implements Runnable {
             } catch (Exception e) {
                 System.out.println(e);
             }
-            // throw new UnsupportedOperationException("Unimplemented method 'run'"); -> diz q o run n foi implementado
-    }}
+            // throw new UnsupportedOperationException("Unimplemented method 'run'"); -> diz
+            // q o run n foi implementado
+        }
+    }
 
     private void verificaCorrida() {
 
@@ -82,38 +95,56 @@ public class Driver implements Runnable {
         // Parar o carro
         double preco = 0;
         this.saldo = getSaldo();
-        if (saldo > 5.87){
+        if (saldo > 5.87) {
             preco = posto.abastecer(saldo, carro.getFuelTank(), carro);
             if (preco > 0) { // Abasteceu e temos valor
                 bot.setPagarPosto(true, preco);
                 preco = 0;
             }
-        }else{
+            if (!rotasSendoExecutada) {
+                // Inicia uma nova rota
+                Route nextRota = rotasAseremExecutadas.get(indexRotas);
+                rotasEmExecucao.add(indexRotas, nextRota);
+                rotasAseremExecutadas.remove(nextRota);
+                iniciaRota();
+            }
+            // if (){
+            // // Adicionar verificação de fim de rota
+            // }
+        } else {
             System.out.println("Carro_" + cadastroDriver + ": Sem saldo suficiente, ainda e necessario abastecer");
         }
 
         // Liberar o carro
     }
 
-    private ArrayList<Route> getRoutes() {
-        // Faz um json solicitando as rotas, espera elas chegarem e dps retorna
-        return null;
+    private void iniciaRota() {
+
     }
 
     private void criarConta() {
         timestamp = Instant.now();
         long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
-        json = jsonMaker.JsonCriarConta(encriptador.criptografarString(idConta), encriptador.criptografarDouble(valorInicialDaConta), encriptador.criptografarTimestamp(timestampNanos));
+        json = jsonMaker.JsonCriarConta(encriptador.criptografarString(idConta),
+                encriptador.criptografarDouble(valorInicialDaConta), encriptador.criptografarTimestamp(timestampNanos));
         memoriaCompartilhada.write(json, "CriarConta");
     }
 
-    private double getSaldo(){
+    private double getSaldo() {
         double saldoNovo = banco.getSaldo(idConta);
         return saldoNovo;
     }
 
     public void setRoute(ArrayList<Route> rotas) {
         this.rotasAseremExecutadas = rotas;
+    }
+
+    public String getId() {
+        return this.idDriver;
+    }
+
+    public Car getCarro() {
+        return this.carro;
     }
 
     class BotPayment {
@@ -127,7 +158,7 @@ public class Driver implements Runnable {
         private float kmPago;
         private float kmRodado;
         private boolean pagarPosto;
-        //public static float kmAtual = 0;;
+        // public static float kmAtual = 0;;
 
         private String idConta;
         private double valorAPagar;
@@ -138,23 +169,24 @@ public class Driver implements Runnable {
             this.pagarPosto = false;
             run();
         }
-        
+
         public void run() {
             // Processos iniciais...
-            while (isAlive){
+            while (isAlive) {
                 try {
-                    //System.out.println("Thread botpayment");
-                    // adicionar verificação de km percorrido 
-                    if (pagarPosto){
+                    // System.out.println("Thread botpayment");
+                    // adicionar verificação de km percorrido
+                    if (pagarPosto) {
                         pay();
                         kmPago = kmRodado;
                     }
-                    
+
                     Thread.sleep(1000);
                 } catch (Exception e) {
                     // TODO: handle exception
                 }
-        }}
+            }
+        }
 
         public void setPagarPosto(boolean pagarPosto, double quantia) {
             this.pagarPosto = pagarPosto;
@@ -164,10 +196,12 @@ public class Driver implements Runnable {
         public void pay() {
             timestamp = Instant.now();
             long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
-            json = jsonMaker.JsonTransferencia(encriptador.criptografarString(idConta), encriptador.criptografarString("Fuel_Station"), encriptador.criptografarDouble(valorAPagar), encriptador.criptografarTimestamp(timestampNanos));
+            json = jsonMaker.JsonTransferencia("4", encriptador.criptografarString(idConta),
+                    encriptador.criptografarString("Fuel_Station"), encriptador.criptografarDouble(valorAPagar),
+                    encriptador.criptografarTimestamp(timestampNanos));
             memoriaCompartilhada.write(json, "6");
             pagarPosto = false;
             valorAPagar = 0;
         }
-        }
+    }
 }

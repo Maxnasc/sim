@@ -26,7 +26,7 @@ public class TransportService extends Thread {
 	@Override
 	public void run() {
 		try {
-			
+
 			this.initializeRoutes();
 
 			this.auto.start();
@@ -60,28 +60,29 @@ public class TransportService extends Thread {
 
 		try {
 			sumo.do_job_set(Route.add(this.itinerary.getIdItinerary(), edge));
-			//sumo.do_job_set(Vehicle.add(this.auto.getIdAuto(), "DEFAULT_VEHTYPE", this.itinerary.getIdItinerary(), 0,
-			//		0.0, 0, (byte) 0));
-			
-			sumo.do_job_set(Vehicle.addFull(this.auto.getIdAuto(), 				//vehID
-											this.itinerary.getIdItinerary(), 	//routeID 
-											"DEFAULT_VEHTYPE", 					//typeID 
-											"now", 								//depart  
-											"0", 								//departLane 
-											"0", 								//departPos 
-											"0",								//departSpeed
-											"current",							//arrivalLane 
-											"max",								//arrivalPos 
-											"current",							//arrivalSpeed 
-											"",									//fromTaz 
-											"",									//toTaz 
-											"", 								//line 
-											this.auto.getPersonCapacity(),		//personCapacity 
-											this.auto.getPersonNumber())		//personNumber
-					);
-			
+			// sumo.do_job_set(Vehicle.add(this.auto.getIdAuto(), "DEFAULT_VEHTYPE",
+			// this.itinerary.getIdItinerary(), 0,
+			// 0.0, 0, (byte) 0));
+
+			sumo.do_job_set(Vehicle.addFull(this.auto.getIdAuto(), // vehID
+					this.itinerary.getIdItinerary(), // routeID
+					"DEFAULT_VEHTYPE", // typeID
+					"now", // depart
+					"0", // departLane
+					"0", // departPos
+					"0", // departSpeed
+					"current", // arrivalLane
+					"max", // arrivalPos
+					"current", // arrivalSpeed
+					"", // fromTaz
+					"", // toTaz
+					"", // line
+					this.auto.getPersonCapacity(), // personCapacity
+					this.auto.getPersonNumber()) // personNumber
+			);
+
 			sumo.do_job_set(Vehicle.setColor(this.auto.getIdAuto(), this.auto.getColorAuto()));
-			
+
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

@@ -1,9 +1,6 @@
 package io.sim;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONObject;
 
 public class FuelSatation {
@@ -14,14 +11,11 @@ public class FuelSatation {
     private SharedMemory memoriaCompartilhada = new SharedMemory();
     private JSONObject json = new JSONObject();
     private Instant timestamp;
-    private Long timestampDriver;
     private double precoCombustivel;
 
-    private Car carro = new Car();
-
-    //Dados da conta alphabank
+    // Dados da conta alphabank
     private String idConta;
-    private double valorInicialDaConta; 
+    private double valorInicialDaConta;
 
     public FuelSatation() {
         this.isAlive = true;
@@ -34,7 +28,7 @@ public class FuelSatation {
     }
 
     public void run() {
-        while (isAlive){
+        while (isAlive) {
             try {
                 System.out.println("Fuel Station");
                 // funções a serem processadas
@@ -42,24 +36,27 @@ public class FuelSatation {
             } catch (Exception e) {
                 System.out.println(e);
             }
-            // throw new UnsupportedOperationException("Unimplemented method 'run'"); -> diz q o run n foi implementado
-    }}
+            // throw new UnsupportedOperationException("Unimplemented method 'run'"); -> diz
+            // q o run n foi implementado
+        }
+    }
 
     private void criarConta() {
         timestamp = Instant.now();
         long timestampNanos = timestamp.getNano() + timestamp.getEpochSecond() * 1_000_000_000L;
-        json = jsonMaker.JsonCriarConta(encriptador.criptografarString(idConta), encriptador.criptografarDouble(valorInicialDaConta), encriptador.criptografarTimestamp(timestampNanos));
+        json = jsonMaker.JsonCriarConta(encriptador.criptografarString(idConta),
+                encriptador.criptografarDouble(valorInicialDaConta), encriptador.criptografarTimestamp(timestampNanos));
         memoriaCompartilhada.write(json, "CriarConta");
     }
 
     public double abastecer(double saldo, double FuelTank, Car carro) {
         double preco = 0, limiteGasolina = 10, novoFuel = 0;
         carro.paraCarro();
-        if ((saldo/precoCombustivel) >= limiteGasolina) { // encher o tanque
+        if ((saldo / precoCombustivel) >= limiteGasolina) { // encher o tanque
             novoFuel = 10;
             preco = precoCombustivel * 10;
         } else {
-            novoFuel = saldo/precoCombustivel;
+            novoFuel = saldo / precoCombustivel;
             preco = saldo;
         }
         carro.infoTanqueAbastecido(novoFuel);
