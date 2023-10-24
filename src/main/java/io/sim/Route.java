@@ -10,9 +10,6 @@ public class Route {
         this.itinerario = new Itinerary("data/dados2.xml", idRota);
     }
 
-    public void RouteDestructor() {
-    }
-
     public String getIdRota() {
         return itinerario.getIDItinerary(); // retorna o id da rota
     }
