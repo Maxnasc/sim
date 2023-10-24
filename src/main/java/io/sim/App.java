@@ -8,8 +8,9 @@ public class App {
     public static void main(String[] args) {
 
         EnvSimulator ev = new EnvSimulator();
-        AlphaBank alpha = new AlphaBank();
+        ev.start();
         Company companhia = new Company(ev);
+        AlphaBank alpha = new AlphaBank();
         FuelSatation postoDeGasolina = new FuelSatation();
 
         // Iniciando threads

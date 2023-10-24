@@ -70,7 +70,7 @@ public class Company implements Runnable {
         criarConta();
 
         botDePagamentos = new BotPayment();
-        simulador.start();
+        //simulador.start();
         run();
     }
 
