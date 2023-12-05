@@ -32,7 +32,7 @@ public class AlphaBank implements Runnable {
         this.tempo = Instant.now();
         timestampCriarConta = (long) 0;
 
-        run();
+        //run();
     }
 
     public void run() {

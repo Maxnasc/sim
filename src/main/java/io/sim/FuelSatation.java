@@ -23,7 +23,7 @@ public class FuelSatation {
         this.valorInicialDaConta = 0;
         this.precoCombustivel = 5.87;
         criarConta();
-
+        System.out.println("Fuel Station");
         run();
     }
 

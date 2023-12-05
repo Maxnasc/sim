@@ -50,17 +50,17 @@ public class Company implements Runnable {
 
     private ArrayList<JSONObject> solicitacoesRotas = new ArrayList<JSONObject>();
 
-    private EnvSimulator simulador;
-
     // private String idItinerario;
 
-    public Company(EnvSimulator ev) {
+    public Company() {
         this.isAlive = true;
         this.precoPkm = 3.25;
         this.idConta = "Company";
         this.valorInicialDaConta = 100.0;
         this.indexControleDistribuicaoRotas = 0;
-        this.simulador = ev;
+        this.rotasAseremExecutadas = new ArrayList<>(); // Inicialize a lista aqui
+        
+        System.out.println("Company");
 
         getRoutes(); // Pega as rotas
         limparArquivoDeRotas();
@@ -71,7 +71,7 @@ public class Company implements Runnable {
 
         botDePagamentos = new BotPayment();
         //simulador.start();
-        run();
+        //run();
     }
 
     private void distribuirRotas() {
@@ -112,6 +112,9 @@ public class Company implements Runnable {
     }
 
     private void getRoutes() {
+        if (this.rotasAseremExecutadas == null) {
+            this.rotasAseremExecutadas = new ArrayList<>(); // Adicione essa verificação e inicialização
+        }
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder construtor = builderFactory.newDocumentBuilder();
@@ -121,9 +124,11 @@ public class Company implements Runnable {
                 this.rotasAseremExecutadas.add(new Route(Integer.toString(i)));
             }
         } catch (SAXException | IOException | DOMException e) {
+            //System.out.println(e);
             e.printStackTrace(); // ou tratamento adequado
         } catch (ParserConfigurationException e) {
             // TODO Auto-generated catch block
+            //System.out.println(e);
             e.printStackTrace();
         }
     }

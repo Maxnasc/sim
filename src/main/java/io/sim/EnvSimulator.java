@@ -50,6 +50,10 @@ public class EnvSimulator extends Thread {
 	private ArrayList<Driver> drivers = new ArrayList<Driver>();
 	private ArrayList<ObjInicializacao> listaDeMapas = new ArrayList<ObjInicializacao>();
 
+	private Company companhia;
+	private AlphaBank alpha;
+	private FuelSatation postoDeGasolina;
+
 	public EnvSimulator() {
 
 	}
@@ -60,13 +64,22 @@ public class EnvSimulator extends Thread {
 		String sumo_bin = "sumo-gui";
 		String config_file = "map/map.sumo.cfg";
 
+		companhia = new Company();
+		companhia.run();
+		alpha = new AlphaBank();
+		alpha.run();
+		postoDeGasolina = new FuelSatation();
+		postoDeGasolina.run();
+
 		// Sumo connection
 		this.sumo = new SumoTraciConnection(sumo_bin, config_file);
 		sumo.addOption("start", "1"); // auto-run on GUI show
 		sumo.addOption("quit-on-end", "1"); // auto-close on end
+		sumo.addOption("threads", "4");
 
 		try {
 			sumo.runServer(12345);
+
 			initializeDrivers();
 			while (isAlive()) {
 				for (ObjInicializacao objeto : listaDeMapas) {
